@@ -1,0 +1,10 @@
+#spring:
+#  datasource:
+#    url: jdbc:mysql/localhost:3306/library,
+#    username: root,
+#    password: root,
+#  jpa:
+#    hibernate:
+#      dialect: org.hibernate.dialect.MySQLDialect
+#      ddl-auto: update
+#    show-sql: true
