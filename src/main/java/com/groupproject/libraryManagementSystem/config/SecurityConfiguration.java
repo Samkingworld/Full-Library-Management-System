@@ -61,9 +61,9 @@ public class SecurityConfiguration {
                         .requestMatchers(mvc.pattern("/api/v1/auth/**")).permitAll()
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/swagger-ui/**"))
                         .permitAll()
-                        .requestMatchers(mvc.pattern("/api/v1/admin/**")).hasRole("ADMIN")
-                        .requestMatchers(mvc.pattern("/api/v1/user/**")).hasAnyRole("ADMIN", "USER")
-                        .requestMatchers(mvc.pattern("/api/v1/catalog/**")).hasAnyRole("ADMIN", "USER" )
+//                        .requestMatchers(mvc.pattern("/api/v1/admin/**")).hasRole("ADMIN")
+//                        .requestMatchers(mvc.pattern("/api/v1/user/**")).hasAnyRole("ADMIN", "USER")
+//                        .requestMatchers(mvc.pattern("/api/v1/catalog/**")).hasAnyRole("ADMIN", "USER" )
                         .anyRequest().permitAll())
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .oauth2ResourceServer(oAuth2ResourceServerConfigurer -> oAuth2ResourceServerConfigurer

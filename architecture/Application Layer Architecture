@@ -1,98 +1,311 @@
-APPLICATION LAYER ARCHITECTURE
+#APPLICATION LAYER ARCHITECTURE
 
 The Application Layer in the Library Management System (LMS) comprises controllers, services, and Data Transfer Objects (DTOs) that collectively handle various aspects of the system's functionality.
- Controller Architecture
-
- Admin Controller
-
- Admin endpoints:
-
- @RestController
- RequestMapping/admin
- This gives first access to the admin upon opening the app
- @RequestMapping("/api/v1/admin")
-
- public class AdminController {
-
-     @Autowired
-     UserService userService;
-     @Autowired
-     LoanBookService loanBookService;
-     @Autowired
-     CatalogService catalogService;
-     @Autowired
-     ReservedBookService reservedBookService;
 
 
 
  //    *************************** USERS **********************************
+###Post/auth/signup
+    This endpoint allows users to sign up on the library application
 
- /Get/Users
+    ###RequestBody: Below are the entries required of the user to submit:
+
+    {
+      "firstName": " ",
+      "lastName": "",
+      "email": "",
+      "phoneNumber": "",
+      "address": "",
+      "dob": "",
+      "favoriteWord": "",
+      "password": ""
+    }
+
+    ###ResponseBody: These are the responses the user gets after entering the details:
+
+    "firstName": "Samuel",
+      "lastName": "Ogoh",
+      "email": "samkingworld@gmail.com",
+      "phoneNumber": "08012345678",
+      "address": "4, S Street, Broadway Stree, UK",
+      "dob": "21/26/1977",
+      "favoriteWord": "string",
+      "password": "Java123@"
+    }'
+
+###Post/auth/signin
+      This endpoint allows users to sign in after they must have had an account on the platform.
+
+      ###RequestBody: These are the required entries for signing in.
+      {
+        "email": "",
+        "password": ""
+      }
+
+      ###ResponseBody: These are the responses that the system gives after you must have entered your details
+
+      {
+        "token": "eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoiZGFtaWxvbGFqb3NlcGg5MUBnbWFpbC5jb20iLCJleHAiOjE2OTkwMjc3MjUsImlhdCI6MTY5OTAwOTcyNSwicm9sZXMiOiJVU0VSIn0.YeFAZ7hLkAkchpz5RmNLqzkFkY-PBe-yNuw5YFUV5jNK06R0PWex4h87aF8-WEJlRD87odk8cIkqhqrcNAcNFZOI2pI29HDz7maIhhctdwg9Wv86SixQ7wg6EXbrsxChkHpOvaVbdGk9_6fIiZnqzXW2CcqnKy3MqKSdtlTdroRNoTEk4hetPnudnf2i_cBmVfwSPr3ujezZNpAJrnDRiUNPvMZSfGgLyLxLawRMJ7EOWIcka2Xxncmj7Eok_E1WL0exi3-Q3cFf_3VtDQCMKK43gjyK5w0JsD9QnSIh0qvVyRfkmCiHhyQO1M6XQaLHkXrP_uhMWKfZMqZbXuRPDQ"
+      }
+###Post/auth/resend-otp/
+      This endpoint allows users to receive a otp again after the initial one, in case it expires. In this case if your profile has not yet been
+      completely created, you would get a message that says so.
+
+
+###Post/forgot-password/
+      This endpoint allows users to enter their email so they can receive a new link in the email, through which they would be able to get a new password
+
+
+
+ ###/Get/Users
      Admin can access all users. Admin can also sort and search users at any page and using any id. Each webpage would have numbers 0-10
      that would allow admin to switch pages by clicking on the number of any page they want to see.
 
-     @GetMapping("/users/all")
-     public ResponseEntity<Page<User>> getAllUsers(
-             @RequestParam(defaultValue = "0") int page,
-             @RequestParam(defaultValue = "10") int size,
-             @RequestParam(defaultValue = "id") String sortField
-     ){
-         Page<User> users = userService.getAllUsers(page, size, sortField);
-         return ResponseEntity.ok(users);
-     }
 
-/Put/updateRole
+###/Put/updateRole
      In the service class, we cached this so that user can easily access without interacting with database directly.
      Also, admin will be able to update user roles. First we check if the user is existing and if there is a role already assigned, then we go ahead to write the logic for updating the role.
 
-     @PutMapping("/update/role/{email}")
-     public Map<String, Object> updateRole(@PathVariable String email, @RequestBody UpdateRoleRequest updateRole){
-         Map<String, Object> userToUpdate = userService.updateRole(email, updateRole.getRole());
-         return userToUpdate;
-     }
 
-/Delete/memberShipNo/
+         {
+           "role": ""
+         }
+         Admin will be able to upgrade user to the role of ADMIN, MEMBER, OR LIBRARIAN, WITH DIFFERENT AUTHORITIES
+         ###ResponseBody: In this case, the admin has not changed the user authority, but as earlier stated, Admin can upgrade user authority
+
+         {
+           "updatedUserDetails": {
+             "id": 15,
+             "membershipNo": "SLB/LAG/10001",
+             "firstName": "Damilola",
+             "lastName": "Oladimeji",
+             "email": "damilolajoseph91@gmail.com",
+             "phoneNumber": "08012345678",
+             "address": "4, S Street, Broadway Stree, UK",
+             "dob": "2001-02-20T23:00:00.000+00:00",
+             "favoriteWord": "string",
+             "authorities": [
+               {
+                 "roleId": 1,
+                 "authority": "USER"
+               }
+             ],
+             "reservations": [],
+             "status": "VERIFIED",
+             "password": "$2a$10$BNSwrvWvK9v7wKnLI3QDiOptdUqKFaa0OiE6GUDP3vvWyN7zWW592",
+             "enabled": true,
+             "username": "damilolajoseph91@gmail.com",
+             "accountNonExpired": true,
+             "accountNonLocked": true,
+             "credentialsNonExpired": true
+           }
+         }
+
+
+###/Delete/admin/memberShipNo/
      This endpoint enables admin to delete user using their membership id.
 
-     @DeleteMapping("/memberShipNo/{membershipNo}")
-     public String deleteUserByUserId(@PathVariable String membershipNo){return userService.deleteByMembershipNo(membershipNo);}
-/Delete/delete/email/
-     This endpoint allows admin to delete user to
-     @DeleteMapping("/email/{email}")
-     public String deleteUserByEmail(@PathVariable String email){return userService.deleteUserByEmail(email);}
-Post/loan-book/
+
+###/Delete/delete/email/
+     This endpoint allows admin to delete user to using the email address
+
+###Delete/admin/catalog/delete/isbn
+     This endpoint allows admin to delete a book using the isbn of the book
+
+###Delete/admin/catalog/delete/id
+     This endpoint allows the admin to delete a book using the id of the book
+
+     ###Delete/admin/book-reservation/delete
+     This endpoint allows the admin to delete a book from the book reservation
+
+###Post/loan-book/
 
  This endpoint allows users to borrow or loan books from the library.
+     ###RequestBody: Below are the details user are supposed to have provided before they can be alloed to loan a book
+     {
+       "user_email": "damilolajoseph91@gmail.com",
+       "book_title_1": "Women of Owu",
+       "book_title_2": "",
+       "return_date_in_days": 1
+     }
+
+     ###ResponseBody: The user gets access to the book and also gets relevant instruction
+     {
+       "otherDetails": {
+         "message": "Book Borrowed Successfully. Do ensure to return before the due date as failure to do so attract a fine.",
+         "status": "00"
+       },
+       "loan_details": {
+         "id": 2,
+         "user_email": "damilolajoseph91@gmail.com",
+         "book_title_1": "Women of Owu",
+         "book_title_2": "",
+         "date_borrowed": "2023-11-03T11:48:04.415+00:00",
+         "due_date": "2023-11-04T11:48:04.415+00:00",
+         "date_returned": null,
+         "fine_for_late_return": 0,
+         "fine_status": "UNPAID",
+         "return_status": false,
+         "notified_user": "NO"
+       }
+     }
+###Post/admin/catalogue/book/add
+    This endpoint allows admin to add a new book. They enter details of the book as below
+     {
+       "title": "Children of Blood and Bone",
+       "author": "Tomi Adeyemi",
+       "publisher": "Amazon Books",
+       "isbn": "1223232200",
+       "pub_year": 2019,
+       "copies": 10
+     }
+
+     ###ResponseBody: Admin gets this response after entering this.
+
+     {
+       "id": 2,
+       "title": "Children of Blood and Bone",
+       "author": "Tomi Adeyemi",
+       "publisher": "Amazon Books",
+       "isbn": "1223232200",
+       "pub_year": 2019,
+       "copies": 10,
+       "copies_out": 0,
+       "copies_available": 10,
+       "reservations": null,
+       "available": true
+     }
+
+  ###Post/loan-management/return-book: This endpoint helps admin to return the book loaned out of the library to a user.
+     ###RequestBody: Here are the expected entries from the user to loan the book
+     {
+       "user_email": "damilolajoseph91@gmail.com",
+       "book_title_1": "Women of Owu",
+       "book1_ISBN": "1223232232"
+
+     }
+
+     ###ResponseBody: Here are the possible responses after having successfully returning the book
+     {
+       "otherDetails": {
+         "message": "Book successfully returned and timely",
+         "status": "00"
+       },
+       "borrowed_book_details": {
+         "id": 2,
+         "user_email": "damilolajoseph91@gmail.com",
+         "book_title_1": "Women of Owu",
+         "book_title_2": "",
+         "date_borrowed": "2023-10-03",
+         "due_date": "2023-11-04",
+         "date_returned": "2023-11-03T11:55:01.692+00:00",
+         "fine_for_late_return": 0,
+         "fine_status": "PAID",
+         "return_status": true,
+         "notified_user": "YES"
+       }
+
+
+
+
 
      //    *************************** loanBooks **********************************
-Post/loan-book/
-     @PostMapping("/loanBook-management/loan-book")
-     Map<String, Object> loanBook (@RequestBody @Valid LoanBookRequest loanBookRequest){
-         return loanBookService.loanBook(loanBookRequest);
-     }
 
-     Post/return-book/
-     This endpoint allows users to return books which they borrowed
-
-     @PostMapping("/loanBook-management/return-book")
-     Map<String, Object> returnBook (@RequestBody @Valid ReturnBookRequest returnBook){
-         return loanBookService.returnBook(returnBook);
-     }
-Post/pay-fine/
+###Post/pay-fine/
 This endpoint allows user to pay fine for delaying books beyond the scheduled period.
 The system is able to calculate the amount of fine they are going to pay based on the period of delay.
 
-     @PostMapping("/loanBook-management/pay-fine")
-     Map<String, Object> payFine (PayFineRequest payFineRequest){
-         return loanBookService.payFine(payFineRequest);
-     }
+###RequestBody:
+  {
+  "user_email": "damilolajoseph91@gmail.com",
+  "fine_amount_Naira": 10
+ }
+###ResponseBody: This is supposed to be the response after paying my fine for submitting late.
+The message below was prompted because I was trying to pay fine when the time of borrowing had not elasped
+ {
+   "otherDetails": {
+     "message": "Book Loan details with the  email damilolajoseph91@gmail.com for an UNPAID FINE does not exist",
+     "status": "99"
+   }
 
 
      //    *************************** CATALOGS **********************************
-/Post/addBook/
+      ###GET/catalog/book/title{book_title}
+         This endpoint allows user to get book from the catalogue using the title
+
+      ###GET/catalog/book/isbn{book_ISBN}
+         This endpoint allows user to get book using the isbn
+
+      ###GET/catalog/book/id{book_ID}
+         This endpoint allows user to get book using the id.
+
+      ###GET/catalog/book/author/book_Author}
+         This endpoint allows user to get book using the name of the author
+         ###RequestBody: This is what you are supposed to enter to get the book.
+
+         {
+         title: ""
+         }
+
+         ###ResponseBody: In this case the user enters "Women of Owu" as the title of the book and then gets the response below
+         }
+
+         [
+           {
+             "id": 1,
+             "title": "Women of Owu",
+             "author": "Femi Osofisan",
+             "publisher": "String Books Publishers",
+             "isbn": "1223232232",
+             "pub_year": 1782,
+             "copies": 10,
+             "copies_out": 0,
+             "copies_available": 10,
+             "reservations": [],
+             "available": true
+           }
+         ]
+
+###GET/catalog/all-books
+         This endpoint all user to search and sort book across different web pages of the library system
+
+         ResponseBody: The user get response of all the books that are available in the library.
+
+         {
+           "content": [
+             {
+               "id": 1,
+               "title": "Women of Owu",
+               "author": "Femi Osofisan",
+               "publisher": "String Books Publishers",
+               "isbn": "1223232232",
+               "pub_year": 1782,
+               "copies": 10,
+               "copies_out": 0,
+               "copies_available": 10,
+               "reservations": [],
+               "available": true
+             },
+             {
+               "id": 2,
+               "title": "Children of Blood and Bone",
+               "author": "Tomi Adeyemi",
+               "publisher": "Amazon Books",
+               "isbn": "1223232200",
+               "pub_year": 2019,
+               "copies": 10,
+               "copies_out": 0,
+               "copies_available": 10,
+               "reservations": [],
+               "available": true
+             }
+           ],
+
+
+
+###/Post/addBook/
 This endpoint allows admin to add a book to the book catalogue. The system first checks if the book was not already in the catalogue. If it wasn't the new book can be added.
-     @PostMapping("/catalog/book/add")
-     public Object addBook(@RequestBody @Valid AddBookRequest book){return catalogService.addBook(book);}
+
 
      @PutMapping("/catalog/update/isbn/{book_ISBN}")
      public Object updateBookByIsbn(@PathVariable("book_ISBN") String bookIsbn, @RequestBody UpdateBookRequest bookRequest)
@@ -117,44 +330,32 @@ Admin can delete book by entering the unique identifier of the book.
 
 
      //    *************************** BOOK RESERVATION **********************************
-/Post/reserveBook/
-Using this endpoint a user can reserve a book for about two hours after the book is available to reserve
-     @PostMapping("/book-reservation/reserve")
-     public Object reserveBook (@RequestBody @Valid ReservedBookRequest request){return reservedBookService.reserveBook(request);}
 
-/Delete/deleteReservedBook
-The system deletes reserved Book if user does not come to take it at the appointed time
 
-     @DeleteMapping("/book-reservation/delete/{reservationID}")
-     public Object deleteReservedBook(@PathVariable("reservationID") Long reservationID){return reservedBookService.deleteReservedBook(reservationID);}
+###Delete/deleteReservedBook
+         The system deletes reserved Book if user does not come to take it at the appointed time
 
- }
 
- ProductService
- Methods:
- getAllProducts():
+###Post/admin/book-reservation/reserve: This endpoint allows the admin to reserve a book for the user
 
- Description: Retrieve a list of all products.
- Functionality: Fetches and returns a paginated list of all available products.
- getProductById(Long id):
 
- Description: Retrieve product details by ID.
- Functionality: Retrieves and returns detailed information about a specific product based on its unique identifier.
- getProductByBrandName(String brandName):
+              ###RequestBody: These are the expected details from the admin to be able to reserve the  book on behalf of the user
 
- Description: Retrieve list of products by a brand.
- Functionality: Retrieves and returns a paginated list of products based on the unique brand name.
- createProduct(ProductDTO productDTO):
+              {
+                "userEmail": "damilolajoseph91@gmail.com",
+                "bookId": 1,
+                "bookTitle": "Women of Owu"
+              }
 
- Description: Create a new product.
- Functionality: Accepts product data and creates a new product in the system, returning the details of the newly created product.
- updateProduct(Long id, ProductDTO productDTO):
+              ###ResponseBody: The system with send back this response because the book is still available for immediate borrowing.
+              If someone had loaned the book and a new user wants to borrow it, the new user will have to reserve it so that they can be aleted
+              that the book is available for borrow.
+           {
+           "otherDetails": {
+             "message": "You can't reserve this book as it is available in the Library.",
+             "status": "99"
+           }
 
- Description: Update an existing product.
- Functionality: Updates the attributes of an existing product based on its unique identifier and the provided product data. Returns the updated product information.
- deleteProduct(Long id):
 
- Description: Delete a product.
- Functionality: Removes a product from the system based on its unique identifier\
 
 
