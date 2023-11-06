@@ -44,7 +44,12 @@ Built with Java and SpringBoot. This is a complete Library Management System
 
 
 DOWNLOAD THE PDF ATTACHED IN THE ROOT FOLDER FOR FULL API DOCUMENTATION!
+
 OR
+
 VISTIT THE LINK BELOW for the documentation or click this link [DOCUMENTATION IN PDF](https://github.com/Samkingworld/Full-Library-Management-System/blob/main/LMS%20Endpoints%20and%20Payloads%20structure.pdf):
+
+
+
 https://github.com/Samkingworld/Full-Library-Management-System/blob/main/LMS%20Endpoints%20and%20Payloads%20structure.pdf
  
